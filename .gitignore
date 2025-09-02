@@ -16,3 +16,6 @@ __pycache__/
 *.swo
 *.bak
 *.tmp
+
+.venv/
+poetry.lock

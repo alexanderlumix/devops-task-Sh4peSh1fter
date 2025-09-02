@@ -1,9 +1,9 @@
 import pymongo
 
 MONGO_HOST = '127.0.0.1'
-MONGO_PORT = 27031
-ADMIN_USER = 'mongo-1'
-ADMIN_PASS = 'mongo-1'
+MONGO_PORT = 27030 # using mongo-0 because its the primary node
+ADMIN_USER = 'mongo-0'
+ADMIN_PASS = 'mongo-0'
 
 APP_DB = 'appdb'
 APP_USER = 'appuser'
@@ -11,7 +11,7 @@ APP_PASS = 'appuserpassword'
 
 
 def create_app_user():
-    uri = f"mongodb://{ADMIN_USER}:{ADMIN_PASS}@{MONGO_HOST}:{MONGO_PORT}/admin?replicaSet=rs0&authSource=admin"
+    uri = f"mongodb://{ADMIN_USER}:{ADMIN_PASS}@{MONGO_HOST}:{MONGO_PORT}/admin?directConnection=true&authSource=admin" # using directConnection=true because the replica set is not initialized yet
     client = pymongo.MongoClient(uri, serverSelectionTimeoutMS=5000)
     db = client[APP_DB]
     try:

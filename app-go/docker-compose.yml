@@ -1,8 +1,15 @@
 version: '3.8'
+
 services:
   product-reader-go:
     build:
       context: .
       dockerfile: Dockerfile
     container_name: product-reader-go
-    network_mode: host
+    networks:
+      - mongo_default
+
+# using the same network as the mongo cluster
+networks: 
+  mongo_default:
+    external: true

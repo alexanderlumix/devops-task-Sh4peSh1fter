@@ -1,13 +1,16 @@
-version: '3.8'
-
 services:
   haproxy:
     image: haproxy:2.9
     container_name: haproxy-lb
     restart: unless-stopped
-    network_mode: host
+    ports: # exposing the haproxy port to the host
+      - "27034:27034"
     volumes:
       - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+    depends_on:
+      - mongo-0
+      - mongo-1
+      - mongo-2
 
   mongo-0:
     image: mongo:7.0.16
@@ -16,10 +19,11 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: mongo-0
       MONGO_INITDB_ROOT_PASSWORD: mongo-0
-      MONGO_PORT: 27030
-    network_mode: host
+    ports: # exposing the mongo-0 port to the host
+      - "27030:27030"
+    command: ["mongod", "--port", "27030", "--bind_ip_all", "--replSet", "rs0", "--keyFile", "/etc/mongo-keyfile"] # using the keyfile for authentication
     healthcheck:
-      test: echo "try { rs.status() } catch (err)" | mongosh --port 27030 -u mongo-0 -p mongo-0
+      test: echo "db.runCommand('ping')" | mongosh --port 27030 --quiet # changed the healthcheck because the previous one was not working
       interval: 5s
       timeout: 15s
       start_period: 15s
@@ -35,10 +39,11 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: mongo-1
       MONGO_INITDB_ROOT_PASSWORD: mongo-1
-      MONGO_PORT: 27031
-    network_mode: host
+    ports: # exposing the mongo-1 port to the host
+      - "27031:27031"
+    command: ["mongod", "--port", "27031", "--bind_ip_all", "--replSet", "rs0", "--keyFile", "/etc/mongo-keyfile"] # using the keyfile for authentication
     healthcheck:
-      test: echo "try { rs.status() } catch (err)" | mongosh --port 27031 -u mongo-1 -p mongo-1
+      test: echo "db.runCommand('ping')" | mongosh --port 27031 --quiet # changed the healthcheck because the previous one was not working
       interval: 5s
       timeout: 15s
       start_period: 15s
@@ -54,10 +59,11 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: mongo-2
       MONGO_INITDB_ROOT_PASSWORD: mongo-2
-      MONGO_PORT: 27032
-    network_mode: host
+    ports: # exposing the mongo-2 port to the host
+      - "27032:27032"
+    command: ["mongod", "--port", "27032", "--bind_ip_all", "--replSet", "rs0", "--keyFile", "/etc/mongo-keyfile"] # using the keyfile for authentication
     healthcheck:
-      test: echo "try { rs.status() } catch (err)" | mongosh --port 27032 -u mongo-2 -p mongo-2
+      test: echo "db.runCommand('ping')" | mongosh --port 27032 --quiet # changed the healthcheck because the previous one was not working
       interval: 5s
       timeout: 15s
       start_period: 15s
