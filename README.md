@@ -17,9 +17,16 @@ This is all my humble opinion so please take this with a grain of salt.
 
 ## Best Practices That Should Be Applied
 
-1. sensitive variables like the username and password should be used as secrets.
-    - fix the environment variables in the docker compose
-    - the mongo keyfile
+1. Sensitive variables like the username and password should be used as secrets. We can use github's secret manager but maybe its an overkill for this scenario.
+    - move all sensitive values to `.env` file with environment variable substitution.
+    - generate cryptographically secure keyfile using `openssl rand -base64 756`.
+2. Instead of defining an image , ports, and healthcheck for each mongo service, we should use a docker file of our own that has all the best practices and variables for the mongo service.
+    - use YAML anchors (&mongo-common) to eliminate duplicate image, resource, and logging configs - this was an overkill IMO.
+    - create custom Docker image with entrypoint script.
+3. I had a lot of issues with the authentication, so there should be a user authentication setup.
+    - add entrypoint script to create instance-specific users on first run.
+4. the resources should have a defined limit.
+    - add CPU and memory limits to prevent resource exhaustion.
 
 # Sources
 
@@ -27,3 +34,6 @@ Here are some sources I took inspiration from while working.
 
 1. https://github.com/UpSync-Dev/docker-compose-mongo-replica-set/blob/main/docker-compose.yml
 2. https://github.com/azita-abdollahi/mongodb-replicaset-docker/blob/master/docker-compose.yml
+3. https://www.mongodb.com/docs/manual/tutorial/change-hostnames-in-a-replica-set/
+4. https://dev.to/jsheridanwells/dockerizing-a-mongo-database-4jf2
+5. https://github.com/minhhungit/mongodb-cluster-docker-compose

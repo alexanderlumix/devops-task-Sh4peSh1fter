@@ -23,7 +23,7 @@ def check_replicaset_status():
     try:
         # Connect to MongoDB using the primary node port with authentication
         # Connect directly to the primary node (mongo-0) via localhost
-        connection_string = 'mongodb://mongo-0:mongo-0@127.0.0.1:27030/?directConnection=true&authSource=admin'
+        connection_string = 'mongodb://mongo-0:mongo-0@127.0.0.1:27034/?directConnection=true&authSource=admin'
         client = MongoClient(connection_string)
         
         # Get replica set status
